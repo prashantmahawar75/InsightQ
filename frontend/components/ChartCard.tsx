@@ -147,14 +147,26 @@ export function ChartCard({ config, onRemove, onFeedback }: ChartCardProps) {
                     const anomaly = anomalyData[key]?.find(a => a.index === props.index && a.isAnomaly);
                     if (anomaly) {
                       return (
-                        <circle
-                          cx={props.cx}
-                          cy={props.cy}
-                          r={6}
-                          fill="#EF4444"
-                          stroke="#fff"
-                          strokeWidth={2}
-                        />
+                        <g>
+                          <circle
+                            cx={props.cx}
+                            cy={props.cy}
+                            r={6}
+                            fill="#EF4444"
+                            stroke="#fff"
+                            strokeWidth={2}
+                          />
+                          <text
+                            x={props.cx}
+                            y={props.cy - 12}
+                            textAnchor="middle"
+                            fill="#EF4444"
+                            fontSize={10}
+                            fontWeight="bold"
+                          >
+                            ⚠️ {anomaly.deviationMultiple.toFixed(1)}x
+                          </text>
+                        </g>
                       );
                     }
                     return <circle cx={props.cx} cy={props.cy} r={4} fill={props.stroke} />;
@@ -170,6 +182,7 @@ export function ChartCard({ config, onRemove, onFeedback }: ChartCardProps) {
                       y={threshold.threshold}
                       stroke="#EF4444"
                       strokeDasharray="5 5"
+                      label={{ value: 'Anomaly threshold (2σ)', position: 'right', fill: '#EF4444', fontSize: 10 }}
                     />
                   );
                 }
