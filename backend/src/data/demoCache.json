@@ -1,0 +1,131 @@
+{
+  "entries": [
+    {
+      "query": "Show me total revenue by product category for 2024",
+      "keywords": ["revenue", "category", "2024", "total", "product"],
+      "response": {
+        "chartConfigs": [
+          {
+            "type": "bar",
+            "title": "Total Revenue by Product Category (2024)",
+            "xAxis": "product_category",
+            "yAxis": ["total_revenue"],
+            "data": [
+              {"product_category": "Electronics", "total_revenue": 485000},
+              {"product_category": "Apparel", "total_revenue": 312000},
+              {"product_category": "Home & Garden", "total_revenue": 278000},
+              {"product_category": "Sports", "total_revenue": 245000},
+              {"product_category": "Food & Beverage", "total_revenue": 198000},
+              {"product_category": "Office Supplies", "total_revenue": 156000}
+            ]
+          }
+        ],
+        "narrative": "Electronics leads all categories with ₹4.85L in 2024 revenue, significantly outperforming other segments. This dominance suggests strong consumer demand for tech products and presents an opportunity to expand the electronics portfolio. Consider increasing inventory allocation to Electronics while evaluating underperforming categories like Office Supplies for potential optimization.",
+        "followUps": [
+          "Which sales reps drove the most Electronics revenue?",
+          "How did each category perform quarter over quarter?",
+          "What is the profit margin by product category?"
+        ],
+        "confidence": "HIGH",
+        "sqlHealth": "first_try",
+        "rowCount": 6,
+        "sql": "SELECT product_category, SUM(revenue) as total_revenue FROM sales JOIN products ON sales.product_id = products.product_id WHERE strftime('%Y', date) = '2024' GROUP BY product_category ORDER BY total_revenue DESC"
+      }
+    },
+    {
+      "query": "Compare monthly revenue trends across all 4 regions for Q3 2023 vs Q3 2024",
+      "keywords": ["monthly", "revenue", "trends", "regions", "Q3", "2023", "2024", "compare"],
+      "response": {
+        "chartConfigs": [
+          {
+            "type": "line",
+            "title": "Monthly Revenue Trends by Region (Q3 2023 vs Q3 2024)",
+            "xAxis": "month",
+            "yAxis": ["North", "South", "East", "Southeast"],
+            "data": [
+              {"month": "Jul 2023", "North": 89000, "South": 78000, "East": 82000, "Southeast": 75000},
+              {"month": "Aug 2023", "North": 245000, "South": 198000, "East": 215000, "Southeast": 187000},
+              {"month": "Sep 2023", "North": 92000, "South": 85000, "East": 88000, "Southeast": 79000},
+              {"month": "Jul 2024", "North": 95000, "South": 88000, "East": 91000, "Southeast": 82000},
+              {"month": "Aug 2024", "North": 98000, "South": 92000, "East": 94000, "Southeast": 86000},
+              {"month": "Sep 2024", "North": 96000, "South": 89000, "East": 92000, "Southeast": 84000}
+            ]
+          }
+        ],
+        "narrative": "A dramatic revenue spike is visible in August 2023 across all regions, with values 2.5-3x higher than surrounding months - this anomaly warrants investigation into potential one-time events or data quality issues. Q3 2024 shows more stable, consistent performance without similar spikes. The Southeast region consistently underperforms other regions by 8-12%, suggesting potential for targeted improvement initiatives.",
+        "followUps": [
+          "What caused the August 2023 revenue spike?",
+          "Which products drove the August 2023 anomaly?",
+          "Why is Southeast underperforming compared to other regions?"
+        ],
+        "confidence": "HIGH",
+        "sqlHealth": "first_try",
+        "rowCount": 6,
+        "sql": "SELECT strftime('%b %Y', date) as month, SUM(CASE WHEN region='North' THEN revenue END) as North, SUM(CASE WHEN region='South' THEN revenue END) as South, SUM(CASE WHEN region='East' THEN revenue END) as East, SUM(CASE WHEN region='Southeast' THEN revenue END) as Southeast FROM sales WHERE (strftime('%Y', date) = '2023' AND strftime('%m', date) BETWEEN '07' AND '09') OR (strftime('%Y', date) = '2024' AND strftime('%m', date) BETWEEN '07' AND '09') GROUP BY month"
+      }
+    },
+    {
+      "query": "Which sales reps in the Southeast had the highest discount rates AND the lowest return rates in H2 2024",
+      "keywords": ["sales", "reps", "Southeast", "discount", "return", "rates", "H2", "2024"],
+      "response": {
+        "chartConfigs": [
+          {
+            "type": "scatter",
+            "title": "Southeast Sales Reps: Discount Rate vs Return Rate (H2 2024)",
+            "xAxis": "avg_discount",
+            "yAxis": ["avg_return_rate"],
+            "data": [
+              {"rep_name": "Quinn Clark", "avg_discount": 18.5, "avg_return_rate": 2.1, "total_revenue": 45000},
+              {"rep_name": "Rachel Lewis", "avg_discount": 15.2, "avg_return_rate": 3.8, "total_revenue": 52000},
+              {"rep_name": "Sam Walker", "avg_discount": 12.8, "avg_return_rate": 4.2, "total_revenue": 48000},
+              {"rep_name": "Tina Hall", "avg_discount": 8.5, "avg_return_rate": 5.1, "total_revenue": 41000},
+              {"rep_name": "Uma Allen", "avg_discount": 22.1, "avg_return_rate": 1.8, "total_revenue": 38000},
+              {"rep_name": "Victor Young", "avg_discount": 14.5, "avg_return_rate": 3.5, "total_revenue": 55000}
+            ]
+          }
+        ],
+        "narrative": "Uma Allen stands out with the highest discounts (22.1%) but remarkably low return rates (1.8%), suggesting effective discount-driven customer satisfaction. Quinn Clark shows a similar pattern with 18.5% discounts and 2.1% returns. This correlation between higher discounts and lower returns may indicate that well-targeted discounts reduce buyer's remorse - consider analyzing Uma's discount strategies for broader application.",
+        "followUps": [
+          "What is Uma Allen's revenue compared to lower-discount reps?",
+          "Do lower return rates correlate with higher customer retention?",
+          "Which product categories see the most benefit from discounting?"
+        ],
+        "confidence": "HIGH",
+        "sqlHealth": "first_try",
+        "rowCount": 6,
+        "sql": "SELECT sr.rep_name, AVG(s.discount_pct) as avg_discount, AVG(s.return_rate) as avg_return_rate, SUM(s.revenue) as total_revenue FROM sales s JOIN sales_reps sr ON s.rep_id = sr.rep_id WHERE sr.region = 'Southeast' AND strftime('%Y', s.date) = '2024' AND strftime('%m', s.date) >= '07' GROUP BY sr.rep_name ORDER BY avg_discount DESC, avg_return_rate ASC"
+      }
+    },
+    {
+      "query": "What are the top 5 products by revenue in 2024",
+      "keywords": ["top", "products", "revenue", "2024", "best", "selling"],
+      "response": {
+        "chartConfigs": [
+          {
+            "type": "bar",
+            "title": "Top 5 Products by Revenue (2024)",
+            "xAxis": "product_name",
+            "yAxis": ["total_revenue"],
+            "data": [
+              {"product_name": "Smartphone X1", "total_revenue": 187000, "units_sold": 425},
+              {"product_name": "Laptop Pro", "total_revenue": 156000, "units_sold": 312},
+              {"product_name": "Winter Jacket", "total_revenue": 98000, "units_sold": 687},
+              {"product_name": "Smart Watch", "total_revenue": 89000, "units_sold": 534},
+              {"product_name": "Air Purifier", "total_revenue": 78000, "units_sold": 298}
+            ]
+          }
+        ],
+        "narrative": "Smartphone X1 dominates with ₹1.87L revenue, reflecting strong demand in the premium mobile segment. Electronics products claim 3 of the top 5 spots, reinforcing the category's market strength. The Winter Jacket's presence indicates seasonal apparel peaks - timing inventory replenishment for Q4 could maximize this opportunity.",
+        "followUps": [
+          "What is the profit margin for each top product?",
+          "How do these products perform across different regions?",
+          "What are the month-over-month trends for Smartphone X1?"
+        ],
+        "confidence": "HIGH",
+        "sqlHealth": "first_try",
+        "rowCount": 5,
+        "sql": "SELECT p.product_name, SUM(s.revenue) as total_revenue, SUM(s.units_sold) as units_sold FROM sales s JOIN products p ON s.product_id = p.product_id WHERE strftime('%Y', s.date) = '2024' GROUP BY p.product_name ORDER BY total_revenue DESC LIMIT 5"
+      }
+    }
+  ]
+}
